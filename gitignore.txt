@@ -1,0 +1,75 @@
+# ===================================
+#   ARCHIVO .gitignore PARA FLET
+# ===================================
+
+# --- Entornos virtuales ---
+venv/
+env/
+.venv/
+ENV/
+
+# --- Compilación y distribución ---
+build/
+dist/
+*.egg-info/
+*.spec
+
+# --- Cachés de Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- Configuración local / IDE ---
+.vscode/
+.idea/
+*.iml
+*.swp
+*.swo
+
+# --- Archivos de logs ---
+*.log
+logs/
+debug.log
+
+# --- Archivos temporales del sistema ---
+.DS_Store
+Thumbs.db
+*.tmp
+*.bak
+
+# --- Archivos del sistema Flet ---
+.flet/
+.flet-core/
+.flet-cache/
+.flet-deploy/
+.flet-build/
+__flet__/
+.flet-web/
+.flet-temp/
+
+# --- Configuración de entorno ---
+*.env
+.env.*
+
+# --- Otros ---
+*.db
+*.sqlite3
+*.zip
+*.tar
+*.gz
+*.pkl
+
+# --- Archivos generados por compilaciones móviles (si usas flet build) ---
+build/
+dist/
+*.apk
+*.ipa
+
+# --- Archivos de pruebas ---
+.coverage
+htmlcov/
+.pytest_cache/
+
+# --- Archivos personales ---
+notes.txt
+todo.txt
