@@ -18,9 +18,9 @@ def HomeView() -> ft.Control:
 def IncidentsView() -> ft.Control:
     return ft.Column(
         [
-            ft.Text("Incidencias", theme_style=ft.TextThemeStyle.HEADLINE_MEDIUM),
+            ft.Text("Vehiculos", theme_style=ft.TextThemeStyle.HEADLINE_MEDIUM),
             ft.Divider(),
-            ft.Text("Listado / acciones de incidencias."),
+            ft.Text("Listado de vehiculos."),
         ],
         expand=True,
     )
@@ -37,7 +37,13 @@ def DashboardView() -> ft.Control:
 
 # --- Punto de entrada ---
 def main(page: ft.Page):
-    page.title = "Flet Skeleton — Drawer + BottomNav (0.28.3)"
+
+    page.theme = ft.Theme(
+        color_scheme_seed=ft.Colors.BLUE,
+        use_material3=True,
+    )
+
+    page.title = "Next App (0.28.3)"
     page.theme_mode = ft.ThemeMode.LIGHT
     page.padding = 0
     page.horizontal_alignment = ft.CrossAxisAlignment.STRETCH
@@ -90,7 +96,7 @@ def main(page: ft.Page):
                 label="Inicio", icon=ft.Icons.HOME_OUTLINED, selected_icon=ft.Icons.HOME
             ),
             ft.NavigationDrawerDestination(
-                label="Incidencias", icon=ft.Icons.REPORT_GMAILERRORRED_OUTLINED, selected_icon=ft.Icons.REPORT
+                label="Vehiculos", icon=ft.Icons.REPORT_GMAILERRORRED_OUTLINED, selected_icon=ft.Icons.REPORT
             ),
             ft.NavigationDrawerDestination(
                 label="Dashboard", icon=ft.Icons.DASHBOARD_OUTLINED, selected_icon=ft.Icons.DASHBOARD
@@ -103,32 +109,32 @@ def main(page: ft.Page):
         on_change=on_drawer_change,
     )
 
-    # AppBar con botón de menú para abrir el Drawer
+    # AppBar
     appbar = ft.AppBar(
         leading=ft.IconButton(ft.Icons.MENU, on_click=open_drawer),
-        title=ft.Text("Flet Skeleton"),
+        title=ft.Text("Next App"),
         center_title=False,
         bgcolor=ft.Colors.SURFACE,
         actions=[
             ft.IconButton(ft.Icons.SEARCH),
             ft.IconButton(ft.Icons.NOTIFICATIONS_NONE),
             ft.PopupMenuButton(
-                items=[
-                    ft.PopupMenuItem(text="Perfil"),
-                    ft.PopupMenuItem(text="Cerrar sesión"),
-                ]
+                items=[ft.PopupMenuItem(text="Perfil"), ft.PopupMenuItem(text="Cerrar sesión")]
             ),
         ],
     )
 
-    # NavigationBar inferior (en 0.28.3 usa NavigationBarDestination)
+    # NavigationBar inferior (personalizada)
     navbar = ft.NavigationBar(
+        bgcolor="#E7E0EC",
+        indicator_color=ft.Colors.BLUE_200,
+        label_behavior=ft.NavigationBarLabelBehavior.ALWAYS_SHOW,
         destinations=[
             ft.NavigationBarDestination(
                 icon=ft.Icons.HOME_OUTLINED, selected_icon=ft.Icons.HOME, label="Inicio"
             ),
             ft.NavigationBarDestination(
-                icon=ft.Icons.LIST_ALT_OUTLINED, selected_icon=ft.Icons.LIST_ALT, label="Incidencias"
+                icon=ft.Icons.LIST_ALT_OUTLINED, selected_icon=ft.Icons.LIST_ALT, label="Vehiculos"
             ),
             ft.NavigationBarDestination(
                 icon=ft.Icons.INSIGHTS_OUTLINED, selected_icon=ft.Icons.INSIGHTS, label="Dashboard"
@@ -138,7 +144,7 @@ def main(page: ft.Page):
         selected_index=selected_index,
     )
 
-    # Montaje de la "shell"
+    # Montaje
     page.appbar = appbar
     page.drawer = drawer
     page.navigation_bar = navbar

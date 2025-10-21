@@ -1,0 +1,52 @@
+[project]
+name = "BaseApp"
+version = "1.0.0"
+description = "Aplicación web progresiva de BaseApp para acceso multiplataforma."
+authors = [{ name = "Israel Negrete" }]
+readme = "README.md"
+requires-python = ">=3.10"
+
+[tool.flet]
+# Punto de entrada de tu app
+module-name = "main"
+
+[tool.flet.build.web]
+# Subcarpeta donde se desplegará tu PWA (coincide con Nginx)
+base-url = "baseapp"
+
+# Motor de renderizado web
+web-renderer = "canvaskit"
+
+# Rutas limpias
+route-url-strategy = "path"
+
+# Información de la PWA
+app-name = "BaseApp"
+app-short-name = "BaseApp"
+app-description = "Aplicación web progresiva de BaseApp para acceso multiplataforma."
+theme-color = "#0175C2"
+background-color = "#FFFFFF"
+
+# Íconos y favicon (rutas relativas al proyecto, no al build)
+icons = [
+    "assets/icons/Icon-180.png",
+    "assets/icons/Icon-192.png",
+    "assets/icons/Icon-512.png",
+    "assets/icons/Icon-maskable-180.png",
+    "assets/icons/Icon-maskable-192.png",
+    "assets/icons/Icon-maskable-512.png"
+]
+
+image = "assets/splash.png"
+
+# Favicon a incluir en index.html
+favicon = "assets/favicon.png"
+
+[tool.flet.publish]
+# Parámetros de publicación (si luego automatizas)
+app-name = "BaseApp"
+app-short-name = "BaseApp"
+app-description = "Aplicación web progresiva de BaseApp para acceso multiplataforma."
+base-url = "baseapp"
+web-renderer = "canvaskit"
+route-url-strategy = "path"
