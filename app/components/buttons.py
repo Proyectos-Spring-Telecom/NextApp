@@ -14,8 +14,8 @@ def PrimaryPillButton(text: str, on_click=None, width: int = 320):
     blue         = "#0D2571"
     blue_hover   = "#12308F"
     blue_pressed = "#0B1E66"
-    white        = ft.Colors.WHITE
-    white70      = ft.Colors.with_opacity(0.7, ft.Colors.WHITE)
+    white        = "#FFFFFF"
+    white70      = "#B3FFFFFF"  # white con 70% opacidad
 
     return ft.ElevatedButton(
         text,
@@ -39,7 +39,7 @@ def PrimaryPillButton(text: str, on_click=None, width: int = 320):
             },
             shape=ft.RoundedRectangleBorder(radius=12),
             padding=ft.Padding(0, 16, 0, 16),   # alto cómodo sin “ensanchar” el botón
-            overlay_color=ft.Colors.with_opacity(0.08, ft.Colors.WHITE),
+            overlay_color="#14FFFFFF",  # white con 8% opacidad
             elevation=2,
         ),
     )

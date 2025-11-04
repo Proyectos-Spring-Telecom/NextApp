@@ -5,7 +5,7 @@ def make_appbar(open_drawer):
         leading=ft.IconButton(ft.Icons.MENU, on_click=open_drawer),
         title=ft.Text("Next App"),
         center_title=False,
-        bgcolor=ft.Colors.SURFACE,
+        bgcolor="#FAFAFA",  # SURFACE
         actions=[
             ft.IconButton(ft.Icons.SEARCH),
             ft.IconButton(ft.Icons.NOTIFICATIONS_NONE),

@@ -5,6 +5,10 @@ description = "Aplicación web progresiva de Next App para acceso multiplataform
 authors = [{ name = "Israel Negrete" }]
 readme = "README.md"
 requires-python = ">=3.10"
+dependencies = [
+    "flet>=0.24.0",
+    "requests>=2.31.0",
+]
 
 [tool.flet]
 # Punto de entrada de tu app
@@ -12,7 +16,9 @@ module-name = "main"
 
 [tool.flet.build.web]
 # Subcarpeta donde se desplegará tu PWA (coincide con Nginx)
-base-url = "nextapp"
+# Si se sirve desde /nextapp/, usar base-url = "nextapp"
+# Si se sirve desde /, dejar vacío o comentar
+base-url = ""
 
 # Motor de renderizado web
 web-renderer = "canvaskit"
@@ -59,6 +65,6 @@ dark_color = "#222222"
 app-name = "Next App"
 app-short-name = "Next App"
 app-description = "Aplicación web progresiva de Next App para acceso multiplataforma."
-base-url = "nextapp"
+base-url = ""
 web-renderer = "canvaskit"
 route-url-strategy = "path"

@@ -11,18 +11,18 @@ def WelcomeView(on_continue):
 
     # Fondo translúcido (car.png)
     background = ft.Image(
-        src="assets/welcome/home.png",
+        src="welcome/home.png",
         fit=ft.ImageFit.CONTAIN,
-        #opacity=0.15,
+        opacity=0.80,
         repeat=ft.ImageRepeat.NO_REPEAT,
     )
 
-    # Logo
-    logo = ft.Image(src="assets/logoHorizontal1.png", width=250, height=50, fit=ft.ImageFit.CONTAIN)
+    # Logo (450x161 px real, escalado proporcionalmente)
+    logo = ft.Image(src="logoHorizontal1.png", width=250, height=90, fit=ft.ImageFit.CONTAIN)
 
     # Textos
-    title = ft.Text("Bienvenido a Next App", size=24, weight=ft.FontWeight.BOLD, text_align=ft.TextAlign.CENTER, color=ft.Colors.WHITE) 
-    subtitle = ft.Text("Tu entorno unificado para gestión y análisis.", text_align=ft.TextAlign.CENTER, color=ft.Colors.WHITE)
+    title = ft.Text("Bienvenido a Next App", size=24, weight=ft.FontWeight.BOLD, text_align=ft.TextAlign.CENTER, color="#FFFFFF") 
+    subtitle = ft.Text("Tu entorno unificado para gestión y análisis.", text_align=ft.TextAlign.CENTER, color="#FFFFFF")
 
     # Botón consistente (sin theme_mode ni width)
     button = PrimaryPillButton("Continuar", on_click=on_continue)
@@ -54,9 +54,9 @@ def WelcomeView(on_continue):
     def on_mount(e: ft.ControlEvent):
         page = e.page
         page.bgcolor = (
-            ft.Colors.SURFACE_CONTAINER_HIGHEST
+            "#E7E0EC"  # SURFACE_CONTAINER_HIGHEST
             if page.theme_mode == ft.ThemeMode.LIGHT
-            else ft.Colors.BACKGROUND
+            else "#FFFFFF"  # BACKGROUND
         )
 
     view.on_mount = on_mount

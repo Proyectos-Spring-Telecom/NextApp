@@ -1,10 +1,9 @@
-# app/services/auth.py
+# app/services/vehicles.py
 
 import requests
-from app.config import AUTH_URL, API_TIMEOUT_SECONDS, USE_HTTPS, DISABLE_SSL_VERIFY
+from app.config import VEHICLES_URL, API_TIMEOUT_SECONDS, USE_HTTPS, DISABLE_SSL_VERIFY
 
 # Desactivar advertencias SSL para Pyodide (web)
-# Pyodide no puede validar certificados SSL correctamente
 if DISABLE_SSL_VERIFY:
     try:
         import urllib3
@@ -14,21 +13,24 @@ if DISABLE_SSL_VERIFY:
 
 # Si HTTPS no está disponible, usar HTTP como fallback (solo desarrollo)
 if not USE_HTTPS:
-    AUTH_URL = AUTH_URL.replace("https://", "http://")
+    VEHICLES_URL = VEHICLES_URL.replace("https://", "http://")
 
-def login(user_name: str, password: str):
+def get_vehicles(token: str):
     """
-    POST TokenApp con { username, password }.
+    GET Vehiculos con Bearer Token.
     Devuelve:
-      { "ok": True, "token": "...", "data": <json> } en éxito
+      { "ok": True, "data": <json> } en éxito
       { "ok": False, "error": "mensaje" } en error
     """
-    payload = {"username": user_name, "password": password}
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json"
+    }
 
     try:
-        resp = requests.post(
-            AUTH_URL, 
-            json=payload, 
+        resp = requests.get(
+            VEHICLES_URL, 
+            headers=headers, 
             timeout=API_TIMEOUT_SECONDS,
             verify=not DISABLE_SSL_VERIFY  # Desactivar verificación SSL en Pyodide
         )
@@ -40,20 +42,10 @@ def login(user_name: str, password: str):
     # Éxito típico .NET: 200/201
     if resp.status_code in (200, 201):
         try:
-            jd = resp.json() if resp.content else {}
-        except Exception:
-            jd = {}
-
-        # Token tolerante a distintos keys comunes
-        token = (
-            jd.get("token")
-            or jd.get("Token")
-            or jd.get("access_token")
-            or jd.get("AccessToken")
-            or jd.get("jwt")
-        )
-
-        return {"ok": True, "token": token, "data": jd}
+            data = resp.json() if resp.content else []
+            return {"ok": True, "data": data}
+        except Exception as ex:
+            return {"ok": False, "error": f"Error al procesar respuesta: {ex}"}
 
     # Error con cuerpo JSON
     try:
@@ -69,3 +61,4 @@ def login(user_name: str, password: str):
         msg = f"HTTP {resp.status_code}"
 
     return {"ok": False, "error": msg}
+
