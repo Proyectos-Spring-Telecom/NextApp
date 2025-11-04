@@ -1,7 +1,7 @@
 [project]
-name = "BaseApp"
+name = "Next App"
 version = "1.0.0"
-description = "Aplicación web progresiva de BaseApp para acceso multiplataforma."
+description = "Aplicación web progresiva de Next App para acceso multiplataforma."
 authors = [{ name = "Israel Negrete" }]
 readme = "README.md"
 requires-python = ">=3.10"
@@ -12,7 +12,7 @@ module-name = "main"
 
 [tool.flet.build.web]
 # Subcarpeta donde se desplegará tu PWA (coincide con Nginx)
-base-url = "baseapp"
+base-url = "nextapp"
 
 # Motor de renderizado web
 web-renderer = "canvaskit"
@@ -21,9 +21,9 @@ web-renderer = "canvaskit"
 route-url-strategy = "path"
 
 # Información de la PWA
-app-name = "BaseApp"
-app-short-name = "BaseApp"
-app-description = "Aplicación web progresiva de BaseApp para acceso multiplataforma."
+app-name = "Next App"
+app-short-name = "Next App"
+app-description = "Aplicación web progresiva de Next App para acceso multiplataforma."
 theme-color = "#0175C2"
 background-color = "#FFFFFF"
 
@@ -31,10 +31,16 @@ background-color = "#FFFFFF"
 icons = [
     "assets/icons/Icon-180.png",
     "assets/icons/Icon-192.png",
+    "assets/icons/Icon-256.png",
     "assets/icons/Icon-512.png",
+    "assets/icons/Icon-768.png",
+    "assets/icons/Icon-1024.png",
     "assets/icons/Icon-maskable-180.png",
     "assets/icons/Icon-maskable-192.png",
-    "assets/icons/Icon-maskable-512.png"
+    "assets/icons/Icon-maskable-256.png",
+    "assets/icons/Icon-maskable-512.png",
+    "assets/icons/Icon-maskable-768.png",
+    "assets/icons/Icon-maskable-1024.png"
 ]
 
 image = "assets/splash.png"
@@ -42,11 +48,17 @@ image = "assets/splash.png"
 # Favicon a incluir en index.html
 favicon = "assets/favicon.png"
 
+[tool.flet.splash]
+image = "assets/splash.png"
+# Colores de fondo (opcional)
+color = "#FFFFFF"
+dark_color = "#222222"
+
 [tool.flet.publish]
 # Parámetros de publicación (si luego automatizas)
-app-name = "BaseApp"
-app-short-name = "BaseApp"
-app-description = "Aplicación web progresiva de BaseApp para acceso multiplataforma."
-base-url = "baseapp"
+app-name = "Next App"
+app-short-name = "Next App"
+app-description = "Aplicación web progresiva de Next App para acceso multiplataforma."
+base-url = "nextapp"
 web-renderer = "canvaskit"
 route-url-strategy = "path"
