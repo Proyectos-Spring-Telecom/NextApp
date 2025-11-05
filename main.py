@@ -193,16 +193,26 @@ def main(page: ft.Page):
                 # Pasar page a HomeView y VehiclesView cuando se selecciona
                 views = [HomeView(page), VehiclesView(page), DashboardView()]
                 content.content = views[i]
+                # Asegurar que el NavigationBar siga visible
+                adapt_layout()
                 page.update()
 
             def on_nav_change(e: ft.ControlEvent):
                 set_index(e.control.selected_index)
 
-            def open_drawer(_=None):
-                if page.drawer is not None:
-                    page.drawer.open = True
-                    page.update()
+            # Crear NavigationBar con iconos simples
+            navbar = ft.NavigationBar(
+                destinations=[
+                    ft.NavigationBarDestination(icon="home", label="Inicio"),
+                    ft.NavigationBarDestination(icon="directions_car", label="Vehículos"),
+                    ft.NavigationBarDestination(icon="insights", label="Tablero"),
+                ],
+                selected_index=0,
+                on_change=on_nav_change,
+            )
 
+            # Configurar componentes del shell ANTES de agregar la vista
+            # 1. Drawer (crear primero para que esté disponible)
             def on_drawer_select(e: ft.ControlEvent):
                 idx = e.control.selected_index
                 if idx in (0, 1, 2):
@@ -217,20 +227,7 @@ def main(page: ft.Page):
                         page.update()
                 page.run_task(close_drawer)
 
-            # Crear NavigationBar con iconos simples
-            navbar = ft.NavigationBar(
-                destinations=[
-                    ft.NavigationBarDestination(icon="home", label="Inicio"),
-                    ft.NavigationBarDestination(icon="directions_car", label="Vehículos"),
-                    ft.NavigationBarDestination(icon="insights", label="Tablero"),
-                ],
-                selected_index=0,
-                on_change=on_nav_change,
-            )
-
-            # Configurar componentes del shell ANTES de agregar la vista
-            # 1. Drawer
-            page.drawer = ft.NavigationDrawer(
+            drawer = ft.NavigationDrawer(
                 controls=[
                     ft.NavigationDrawerDestination(icon="home", label="Inicio"),
                     ft.NavigationDrawerDestination(icon="directions_car", label="Vehículos"),
@@ -239,32 +236,79 @@ def main(page: ft.Page):
                     ft.NavigationDrawerDestination(icon="settings", label="Ajustes"),
                 ],
                 on_change=on_drawer_select,
+                open=False,  # Inicialmente cerrado
             )
+            page.drawer = drawer
 
-            # 2. AppBar
+            # 2. Función para abrir el drawer (definida después de crear drawer)
+            def open_drawer(e=None):
+                # Asegurar que el drawer esté configurado en la página
+                if page.drawer is None:
+                    page.drawer = drawer
+                
+                # Intentar múltiples métodos para abrir el drawer
+                try:
+                    # Método 1: Cambiar directamente la propiedad open
+                    page.drawer.open = True
+                    page.update()
+                    
+                    # Método 2: Si no funciona, recrear el drawer
+                    async def force_open():
+                        await asyncio.sleep(0.1)
+                        if page.drawer is not None:
+                            if not page.drawer.open:
+                                # Forzar recreación si es necesario
+                                page.drawer.open = True
+                                page.update()
+                    
+                    page.run_task(force_open)
+                except Exception as ex:
+                    # Si hay algún error, intentar recrear el drawer
+                    try:
+                        page.drawer = ft.NavigationDrawer(
+                            controls=[
+                                ft.NavigationDrawerDestination(icon="home", label="Inicio"),
+                                ft.NavigationDrawerDestination(icon="directions_car", label="Vehículos"),
+                                ft.NavigationDrawerDestination(icon="insights", label="Tablero"),
+                                ft.Divider(),
+                                ft.NavigationDrawerDestination(icon="settings", label="Ajustes"),
+                            ],
+                            on_change=on_drawer_select,
+                            open=True,
+                        )
+                        page.update()
+                    except:
+                        pass
+
+            # 2. AppBar (con botón de menú funcional)
             appbar = ft.AppBar(
-                leading=ft.IconButton(icon="menu", on_click=open_drawer, tooltip="Menú"),
+                leading=ft.IconButton(
+                    icon="menu",
+                    on_click=lambda e: open_drawer(e),  # Asegurar que se pase el evento
+                    tooltip="Abrir menú",
+                    icon_size=24,
+                ),
                 title=ft.Text("Next App"),
                 center_title=False,
                 bgcolor="#FAFAFA",
+                elevation=1,
             )
             page.appbar = appbar
 
-            # 3. NavigationBar según ancho
+            # 3. NavigationBar - siempre visible
             def adapt_layout():
-                if page.width is None or page.width < 900:
-                    page.navigation_bar = navbar
-                else:
-                    page.navigation_bar = None
+                # Mostrar NavigationBar siempre para facilitar la navegación
+                page.navigation_bar = navbar
 
             # Configurar adaptación inicial
             adapt_layout()
             page.on_resize = lambda _: adapt_layout()
             
-            # Agregar vista con AppBar también en la View (puede ser necesario en Flet 0.28.3)
+            # Agregar vista con AppBar y Drawer también en la View (necesario en Flet 0.28.3)
             home_view = ft.View(
                 route="/home",
                 appbar=appbar,  # Configurar AppBar también en la View
+                drawer=drawer,  # Configurar Drawer también en la View
                 controls=[ft.Column([content], expand=True)],
                 padding=0,
             )
@@ -277,20 +321,21 @@ def main(page: ft.Page):
             async def verify_components():
                 await asyncio.sleep(0.2)
                 # Forzar actualización si los componentes no están visibles
-                if page.appbar is None or page.drawer is None:
+                if page.appbar is None:
                     page.appbar = appbar
-                    page.drawer = ft.NavigationDrawer(
-                        controls=[
-                            ft.NavigationDrawerDestination(icon="home", label="Inicio"),
-                            ft.NavigationDrawerDestination(icon="directions_car", label="Vehículos"),
-                            ft.NavigationDrawerDestination(icon="insights", label="Tablero"),
-                            ft.Divider(),
-                            ft.NavigationDrawerDestination(icon="settings", label="Ajustes"),
-                        ],
-                        on_change=on_drawer_select,
-                    )
-                    adapt_layout()
-                    page.update()
+                if page.drawer is None:
+                    page.drawer = drawer
+                # Asegurar que el drawer esté disponible y cerrado inicialmente
+                if page.drawer is not None:
+                    page.drawer.open = False
+                adapt_layout()
+                page.update()
+                
+                # Verificación adicional: asegurar que open_drawer funcione
+                # Guardar referencia al drawer en la página para acceso global
+                if not hasattr(page, '_drawer_reference'):
+                    page._drawer_reference = drawer
+                    page._open_drawer_func = open_drawer
             
             page.run_task(verify_components)
             return

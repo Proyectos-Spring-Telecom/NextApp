@@ -1,7 +1,7 @@
 import flet as ft
 import asyncio
 from app.services.vehicles import get_vehicles
-from app.services.locations import get_all_vehicles_locations
+from app.services.locations import get_last_vehicles_positions
 from app.components.map import create_map_with_markers
 
 def HomeView(page: ft.Page) -> ft.Control:
@@ -34,44 +34,73 @@ def HomeView(page: ft.Page) -> ft.Control:
                 map_container.update()
                 return
             
-            # Obtener vehículos de la API
-            result = await asyncio.to_thread(get_vehicles, token)
+            # Obtener últimas posiciones de vehículos directamente desde el endpoint
+            positions_result = await asyncio.to_thread(get_last_vehicles_positions, token)
             
-            if result.get("ok"):
-                vehicles = result.get("data", [])
+            if positions_result.get("ok"):
+                vehicles_with_positions = positions_result.get("data", [])
                 
-                if vehicles:
-                    # Intentar obtener ubicaciones de los vehículos
-                    locations = await asyncio.to_thread(get_all_vehicles_locations, token, vehicles)
-                    
-                    # Agregar coordenadas a los vehículos si se encontraron
-                    for vehicle in vehicles:
-                        vehicle_id = vehicle.get("id")
-                        if vehicle_id in locations:
-                            location_data = locations[vehicle_id]
-                            # Agregar coordenadas al vehículo
-                            vehicle["latitud"] = location_data.get("latitud") or location_data.get("Latitud") or location_data.get("lat") or location_data.get("latitude")
-                            vehicle["longitud"] = location_data.get("longitud") or location_data.get("Longitud") or location_data.get("lon") or location_data.get("lng") or location_data.get("longitude")
-                    
-                    # Crear mapa con markers
+                if vehicles_with_positions:
+                    # El endpoint devuelve vehículos con sus últimas posiciones
+                    # Crear mapa con markers directamente
                     map_widget = create_map_with_markers(
-                        vehicles,
+                        vehicles_with_positions,
                         width=int(page.width) if page.width else None,
-                        height=int(page.height * 0.7) if page.height else 600
+                        height=int(page.height * 0.7) if page.height else 600,
+                        page=page
                     )
                     map_container.content = map_widget
                 else:
-                    map_container.content = ft.Text(
-                        "No hay vehículos disponibles",
-                        size=16,
-                    )
+                    # Si no hay vehículos con posiciones, intentar obtener lista de vehículos
+                    vehicles_result = await asyncio.to_thread(get_vehicles, token)
+                    if vehicles_result.get("ok"):
+                        vehicles = vehicles_result.get("data", [])
+                        if vehicles:
+                            # Crear mapa aunque no tenga coordenadas (mostrará mensaje)
+                            map_widget = create_map_with_markers(
+                                vehicles,
+                                width=int(page.width) if page.width else None,
+                                height=int(page.height * 0.7) if page.height else 600,
+                                page=page
+                            )
+                            map_container.content = map_widget
+                        else:
+                            map_container.content = ft.Text(
+                                "No hay vehículos disponibles",
+                                size=16,
+                            )
+                    else:
+                        map_container.content = ft.Text(
+                            "No hay vehículos con posiciones disponibles",
+                            size=16,
+                        )
             else:
-                error_msg = result.get("error", "Error desconocido")
-                map_container.content = ft.Text(
-                    f"Error al cargar vehículos: {error_msg}",
-                    size=16,
-                    color="#F44336"
-                )
+                # Si falla el endpoint de posiciones, intentar con vehículos sin posiciones
+                vehicles_result = await asyncio.to_thread(get_vehicles, token)
+                if vehicles_result.get("ok"):
+                    vehicles = vehicles_result.get("data", [])
+                    if vehicles:
+                        # Crear mapa aunque no tenga coordenadas (mostrará mensaje)
+                        map_widget = create_map_with_markers(
+                            vehicles,
+                            width=int(page.width) if page.width else None,
+                            height=int(page.height * 0.7) if page.height else 600
+                        )
+                        map_container.content = map_widget
+                    else:
+                        error_msg = positions_result.get("error", "Error desconocido")
+                        map_container.content = ft.Text(
+                            f"Error al cargar posiciones: {error_msg}",
+                            size=16,
+                            color="#F44336"
+                        )
+                else:
+                    error_msg = positions_result.get("error", "Error desconocido")
+                    map_container.content = ft.Text(
+                        f"Error al cargar vehículos: {error_msg}",
+                        size=16,
+                        color="#F44336"
+                    )
         except Exception as ex:
             map_container.content = ft.Text(
                 f"Error: {str(ex)}",

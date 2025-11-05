@@ -56,7 +56,8 @@ def VehiclesView(page: ft.Page) -> ft.Control:
                         
                         card = create_vehicle_card(
                             vehicle,
-                            on_click=make_click_handler(vehicle)
+                            on_click=make_click_handler(vehicle),
+                            page=page
                         )
                         cards.append(card)
                     
